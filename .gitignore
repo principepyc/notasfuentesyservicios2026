@@ -1,0 +1,9 @@
+# Datos personales sin cifrar (NUNCA subir a GitHub)
+private-data/
+
+# Archivos del sistema / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
