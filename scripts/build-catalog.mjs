@@ -449,6 +449,20 @@ async function buildCommissionBundle(comision, students, isDemo) {
   return bundle.count;
 }
 
+async function updateCacheBusterInHtml() {
+  const indexPath = path.join(ROOT_DIR, 'index.html');
+  if (!(await fileExists(indexPath))) return;
+  const version = new Date().toISOString().replace(/\D/g, '').slice(0, 12);
+  const html = await fs.readFile(indexPath, 'utf8');
+  const updated = html.replace(
+    /(src="data\/comision-[1-6]\.js)(?:\?v=[^"]*)?(")/g,
+    `$1?v=${version}$2`
+  );
+  if (updated !== html) {
+    await fs.writeFile(indexPath, updated, 'utf8');
+  }
+}
+
 async function main() {
   const isDemo = process.argv.includes('--demo');
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -464,6 +478,8 @@ async function main() {
       `[Comisión ${comision}] ${count} registro(s) cifrado(s) -> data/comision-${comision}.js`
     );
   }
+
+  await updateCacheBusterInHtml();
 
   console.log(
     `\nListo (${isDemo ? 'MODO DEMO' : 'DATOS REALES'}). Total: ${total} estudiante(s) procesado(s).`
